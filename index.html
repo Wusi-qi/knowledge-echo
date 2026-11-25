@@ -97,6 +97,15 @@ main{position:relative;padding:27px 0 45px}.intro{display:flex;align-items:flex-
 @media(max-width:1100px){.wbody{grid-template-columns:190px minmax(0,1fr) 300px;gap:8px;padding:10px}.wbody.nodetail{grid-template-columns:190px minmax(0,1fr)}.wnav{padding:11px;gap:9px}.wdetail{padding:12px}.wnode{padding:6px 8px;gap:4px}.wnode .wnode-icon{width:26px;height:26px}.wnode small{font-size:9px}.wstage-head{left:12px;right:12px}.wstage-head h3{font-size:17px}}
 @media(max-width:820px){html:has(body.workspace),body.workspace{overflow:auto}.workbench{height:auto;min-height:100dvh}.wbody,.wbody.nodetail{grid-template-columns:185px minmax(0,1fr);grid-template-rows:auto auto auto}.wnav{grid-row:1/4}.wcenter{min-height:560px}.wdetail{grid-column:2;grid-row:2;margin:0}.wask,.nodetail .wask{grid-column:2;grid-row:3}.wvisual{height:190px}.wgraph{inset:78px 0 46px}}
 @media(max-width:560px){.wbody,.wbody.nodetail{display:flex;flex-direction:column}.wnav{max-height:none}.wside-visual{display:none}.wcenter{min-height:535px}.wtop{padding:0 10px}.wtop .brand-tagline,.wtop .brand-line{display:none}.wstage{min-height:390px}.wnode{width:32%}.wnode .wnode-icon{display:none}.wroot{width:88px}.wdetail{margin:0}.wask{position:sticky;bottom:5px}}
+
+/* Keep the article cover readable even when the sidebar content exceeds the viewport. */
+.wnav > *{flex-shrink:0}
+.wnav .wside-visual{flex:0 0 auto;display:block;width:100%;height:clamp(112px,17vh,158px);min-height:112px;overflow:hidden}
+.wnav .wside-visual .visual{width:100%;height:100%;min-height:0}
+.wnav .wside-visual .spine-pic{height:100%;width:100%;left:0;top:0;object-fit:contain;object-position:center}
+.wnav{overscroll-behavior-y:contain;scrollbar-width:thin}
+@media(max-height:820px) and (min-width:821px){.wnav{gap:9px;padding:12px}.wside-section{padding-top:9px}.wside-section h4{margin-bottom:6px}.wside-title{line-height:1.45}.wnav .wb{padding-top:7px;padding-bottom:7px}}
+@media(max-width:560px){.wnav .wside-visual{height:140px}}
 </style>
 </head>
 <body>
