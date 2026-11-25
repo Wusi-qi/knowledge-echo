@@ -186,6 +186,38 @@ main{position:relative;padding:27px 0 45px}.intro{display:flex;align-items:flex-
 .wsource-confirm{width:100%;border:0;border-radius:10px;padding:11px;color:white;font-weight:700;background:linear-gradient(105deg,#8dacf0,#8e70e8)}
 @media(max-width:1250px){.wgesture-hint{top:auto;bottom:48px;right:12px}}
 @media(max-width:560px){.wgesture-hint{display:none}}
+
+/* V6: render labels at their real font size; only coordinates and dimensions are scaled. */
+.wgraph{transform:none!important;will-change:auto;--z:1}
+.wgraph .wnode,.wgraph .wroot{transform:none;will-change:auto;box-sizing:border-box;background:var(--surface2)}
+html[data-theme="light"] .wgraph .wnode,html[data-theme="light"] .wgraph .wroot{background:#fff}
+.wgraph .wnode{width:calc(clamp(112px,30%,210px)*var(--z));min-height:calc(62px*var(--z));padding:calc(9px*var(--z)) calc(11px*var(--z));gap:calc(8px*var(--z));border-radius:calc(32px*var(--z));box-shadow:0 4px 16px rgba(var(--primary-rgb),.09)}
+.wgraph .wnode.on{box-shadow:0 0 0 3px rgba(var(--primary-rgb),.13),0 5px 16px rgba(var(--primary-rgb),.12)}
+.wgraph .wnode strong{font-size:calc(15px*var(--z));line-height:1.35;font-weight:700;color:var(--text);letter-spacing:0}
+.wgraph .wnode small{font-size:calc(11px*var(--z));line-height:1.4;color:var(--muted);margin-top:calc(3px*var(--z))}
+.wgraph .wnode .wnode-icon{width:calc(35px*var(--z));height:calc(35px*var(--z));flex:none}
+.wgraph .wnode .wnode-icon .svg{width:calc(20px*var(--z));height:calc(20px*var(--z))}
+.wgraph .wroot{width:calc(clamp(98px,10vw,145px)*var(--z));font-size:calc(16px*var(--z));font-weight:750;gap:calc(4px*var(--z));border-width:calc(4px*var(--z));line-height:1.4}
+.wgraph .wroot .svg{width:calc(42px*var(--z));height:calc(42px*var(--z))}
+.wgraph .wroot img{object-fit:contain}
+.wlinks path{stroke-width:1.6;opacity:.65}
+.wlinks path.on{stroke-width:2.3;opacity:1}
+.wdetail .wexplain{font-size:13px;line-height:1.85}
+.wdetail .wplain{font-size:13px;line-height:1.9;color:var(--text);margin:12px 0 16px}
+.wdetail .wplain h4{font-size:13px;margin:15px 0 5px;color:var(--text)}
+.wdetail .wplain p{font-size:13px;margin:0 0 9px;color:var(--muted);line-height:1.85}
+.wdetail .wpoints{font-size:12px}
+.wdetail .wsource-preview{margin-top:12px}
+.wmini{border:1px solid var(--line);background:var(--surface2);border-radius:13px;padding:12px;margin:10px 0 12px}
+.wmini-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700}
+.wmini-head small{font-weight:400;color:var(--muted);font-size:10px}
+.wmini svg{display:block;width:100%;height:auto;margin:8px 0}
+.wmini input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
+.wmini-label{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted)}
+.wmini output{display:block;color:var(--primary);font-size:12px;font-weight:700;margin:7px 0 3px}
+.wmini-note{font-size:11px;color:var(--muted);line-height:1.65;margin:6px 0 0}
+@media(max-width:1100px){.wgraph .wnode strong{font-size:calc(13px*var(--z))}.wgraph .wnode small{font-size:calc(10px*var(--z))}.wgraph .wnode .wnode-icon{width:calc(27px*var(--z));height:calc(27px*var(--z))}.wgraph .wnode .wnode-icon .svg{width:calc(17px*var(--z));height:calc(17px*var(--z))}}
+@media(max-width:560px){.wgraph .wnode{width:calc(32%*var(--z));padding:calc(6px*var(--z));min-height:calc(45px*var(--z))}.wgraph .wnode strong{font-size:calc(11px*var(--z))}.wgraph .wnode small{font-size:calc(9px*var(--z))}.wgraph .wroot{width:calc(86px*var(--z));font-size:calc(12px*var(--z))}}
 </style>
 </head>
 <body>
@@ -330,10 +362,16 @@ function wSaveLabel(){q('#wSave').textContent=saved.includes(wi)?'★ 已收藏'
 
 let wPanX=0,wPanY=0,wGesture=null,wSkipClick=false,wClickTimer=0,wPositions=[],wRootPos=[50,48];
 const wStage=q('#wStage'),wGraphEl=q('#wGraph');
-function wApplyTransform(){wGraphEl.style.transform='translate3d('+wPanX+'px,'+wPanY+'px,0) scale('+wz+')';q('#wPercent').textContent=Math.round(wz*100)+'%'}
-function wZoom(n,clientX,clientY){const next=Math.max(.35,Math.min(3,n));if(next===wz)return;const rect=wGraphEl.getBoundingClientRect();const x=Number.isFinite(clientX)?clientX:rect.left+rect.width/2,y=Number.isFinite(clientY)?clientY:rect.top+rect.height/2;const ratio=next/wz;wPanX+=(x-(rect.left+rect.width/2))*(1-ratio);wPanY+=(y-(rect.top+rect.height/2))*(1-ratio);wz=next;wApplyTransform()}
+function wApplyTransform(){wGraphEl.style.setProperty('--z',String(wz));q('#wPercent').textContent=Math.round(wz*100)+'%';wDrawLinks()}
+function wZoom(n,clientX,clientY){const next=Math.max(.35,Math.min(3,n));if(next===wz)return;const rect=wGraphEl.getBoundingClientRect();const x=Number.isFinite(clientX)?clientX:rect.left+rect.width/2,y=Number.isFinite(clientY)?clientY:rect.top+rect.height/2;const ratio=next/wz;wPanX+=(x-(rect.left+rect.width/2)-wPanX)*(1-ratio);wPanY+=(y-(rect.top+rect.height/2)-wPanY)*(1-ratio);wz=next;wApplyTransform()}
 function wResetView(){wPanX=0;wPanY=0;wz=1;wApplyTransform()}
-function wDrawLinks(){const svg=q('#wLinks');const root=q('#wRoot');root.style.left=wRootPos[0]+'%';root.style.top=wRootPos[1]+'%';const halo=svg.querySelector('ellipse');if(halo){halo.setAttribute('cx',wRootPos[0]);halo.setAttribute('cy',wRootPos[1])}qa('.wnode').forEach((b,i)=>{const pos=wPositions[i];if(!pos)return;const [x,y]=pos;b.style.left=x+'%';b.style.top=y+'%';const path=svg.querySelector('[data-edge="'+i+'"]');if(!path)return;const [rx,ry]=wRootPos;const dx=x-rx,dy=y-ry;const horizontal=Math.abs(dx)>Math.abs(dy)*.7;const d=horizontal?'M '+rx+' '+ry+' C '+(rx+dx*.45)+' '+ry+' '+(x-dx*.45)+' '+y+' '+x+' '+y:'M '+rx+' '+ry+' C '+rx+' '+(ry+dy*.5)+' '+x+' '+(y-dy*.5)+' '+x+' '+y;path.setAttribute('d',d);path.classList.toggle('on',i===wn)})}
+function wDrawLinks(){const svg=q('#wLinks'),root=q('#wRoot'),W=wGraphEl.clientWidth,H=wGraphEl.clientHeight;if(!W||!H||!wPositions.length)return;svg.setAttribute('viewBox','0 0 '+W+' '+H);
+const screen=p=>[Math.round(W/2+(p[0]/100*W-W/2)*wz+wPanX),Math.round(H/2+(p[1]/100*H-H/2)*wz+wPanY)];
+const place=(el,p)=>{const [x,y]=screen(p);el.style.left=Math.round(x-el.offsetWidth/2)+'px';el.style.top=Math.round(y-el.offsetHeight/2)+'px';return [x,y]};
+const [rx,ry]=place(root,wRootPos);const halo=svg.querySelector('ellipse');if(halo){halo.setAttribute('cx',rx);halo.setAttribute('cy',ry);halo.setAttribute('rx',W*.29*wz);halo.setAttribute('ry',H*.36*wz);halo.setAttribute('stroke-width','1');halo.setAttribute('stroke-dasharray','4 6')}
+qa('.wnode').forEach((b,i)=>{const pos=wPositions[i];if(!pos)return;const [x,y]=place(b,pos);const path=svg.querySelector('[data-edge="'+i+'"]');if(!path)return;const dx=x-rx,dy=y-ry;const horizontal=Math.abs(dx)>Math.abs(dy)*.7;const d=horizontal?'M '+rx+' '+ry+' C '+(rx+dx*.45)+' '+ry+' '+(x-dx*.45)+' '+y+' '+x+' '+y:'M '+rx+' '+ry+' C '+rx+' '+(ry+dy*.5)+' '+x+' '+(y-dy*.5)+' '+x+' '+y;path.setAttribute('d',d);path.classList.toggle('on',i===wn)})}
+if(window.ResizeObserver)new ResizeObserver(()=>wDrawLinks()).observe(wGraphEl);
+if(document.fonts)document.fonts.ready.then(()=>wDrawLinks());
 wStage.addEventListener('wheel',e=>{if(e.target.closest('.wzoom'))return;e.preventDefault();const delta=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?window.innerHeight:1);wZoom(wz*Math.exp(-Math.max(-350,Math.min(350,delta))*.0017),e.clientX,e.clientY)},{passive:false});
 wStage.addEventListener('pointerdown',e=>{if(!e.isPrimary||e.button!==0||e.target.closest('.wzoom,.wlegend'))return;const node=e.target.closest('.wnode'),root=e.target.closest('.wroot');const index=node?Number(node.dataset.windex):-1;const pos=root?wRootPos:node?wPositions[index]:null;wGesture={id:e.pointerId,x:e.clientX,y:e.clientY,px:wPanX,py:wPanY,index,root:!!root,pos:pos?pos.slice():null,moved:false};wStage.setPointerCapture(e.pointerId);e.preventDefault()});
 wStage.addEventListener('pointermove',e=>{const g=wGesture;if(!g||g.id!==e.pointerId)return;const dx=e.clientX-g.x,dy=e.clientY-g.y;if(!g.moved&&Math.hypot(dx,dy)<5)return;g.moved=true;wStage.classList.add('panning');if(g.pos){const next=[g.pos[0]+dx/(Math.max(1,wGraphEl.clientWidth)*wz)*100,g.pos[1]+dy/(Math.max(1,wGraphEl.clientHeight)*wz)*100];if(g.root)wRootPos=next;else wPositions[g.index]=next;wDrawLinks()}else{wPanX=g.px+dx;wPanY=g.py+dy;wApplyTransform()}});
@@ -343,10 +381,64 @@ wStage.addEventListener('pointerup',e=>wEndGesture(e));wStage.addEventListener('
 function wShowDetail(){q('#wDetail').hidden=false;q('#wBody').classList.remove('nodetail')}
 function wTab(t){wt=t;qa('[data-wtab]').forEach(b=>b.classList.toggle('on',b.dataset.wtab===t));wRenderDetail()}
 function wSelect(i){wn=i;qa('.wnode').forEach((b,j)=>{b.classList.toggle('on',j===i);b.setAttribute('aria-pressed',String(j===i))});wShowDetail();wDrawLinks();wTab('explain')}
+
+/* Display decisions are per knowledge node, never per article. */
+const wNodeModes=[['text','text','3d','text','text'],['text','aperture','shutter','iso','text'],['pressure','rhythm','text','text']];
+const wExtra=[
+[['在哪里','颈椎位于头部下方、胸椎上方，是连接头部与躯干的脊柱节段。','有什么作用','它既提供支撑，也允许头部进行转动、低头和抬头等活动。'],['结构关系','颈椎下方与胸椎相连，胸椎还与肋骨形成胸廓的一部分。','功能区别','颈部活动范围较大，胸椎的运动受到胸廓结构等因素影响。'],[],['脊髓与神经根','脊髓位于椎管内，神经根从相邻结构之间的通道离开脊柱。','为什么要区分','骨骼、椎间盘与神经属于不同组织，理解位置关系有助于理解科普中的结构描述。'],['常见困扰','长时间维持同一姿势、肌肉疲劳等都可能与颈部不适有关。','怎样理解','仅凭酸痛、僵硬或睡眠不佳不能判断具体疾病，持续或加重的症状应由专业人员评估。']],
+[['什么是曝光','曝光描述光线到达感光元件的量。曝光不足通常会让图像较暗，曝光过多可能导致亮部细节丢失。','容易混淆的概念','最终照片的亮度还受到 ISO、图像处理等影响，并不完全等同于传感器接收的光量。'],[],[],[],['如何搭配参数','拍摄静物、人像或运动场景时，可以先确定最重要的效果，再调整其他参数。','举个例子','想冻结运动时优先考虑较短的快门时间，再根据环境光线调整光圈和 ISO。']],
+[[],[],['疲劳不等于困意','身体疲惫并不一定意味着大脑已进入容易入睡的状态。','为什么会这样','压力、担忧和精神兴奋可能提高唤醒水平，让人虽然觉得累，却仍然难以入睡。'],['多因素共同作用','睡眠压力、昼夜节律、环境光线与唤醒状态都可能影响睡眠。','从哪里继续了解','可以先区分作息时机、睡眠机会和精神紧张等不同问题。持续失眠宜咨询专业人员。']]
+];
+function wMini(kind){
+const box=document.createElement('section');box.className='wmini';
+const config={
+pressure:['睡眠压力变化','清醒时长',0,24,16,'小时'],
+rhythm:['昼夜节律示意','一天中的时间',0,24,14,'时'],
+aperture:['光圈与景深示意','光圈 f 值',0,6,0,''],
+shutter:['快门与运动模糊','曝光时间',0,5,2,''],
+iso:['ISO 与画面噪点','ISO 设置',0,5,1,'']
+}[kind];
+const [title,label,min,max,start,unit]=config;
+box.innerHTML='<div class="wmini-head"><span></span><small>2D 交互示意</small></div><svg viewBox="0 0 300 145" role="img" aria-label="'+title+'"></svg><div class="wmini-label"><span>'+label+'</span><span>拖动滑块观察</span></div><input type="range" min="'+min+'" max="'+max+'" step="1" value="'+start+'" aria-label="'+label+'"><output></output><div class="wmini-note"></div>';
+box.querySelector('.wmini-head span').textContent=title;
+const svg=box.querySelector('svg'),input=box.querySelector('input'),out=box.querySelector('output'),note=box.querySelector('.wmini-note');
+function render(){const n=Number(input.value);
+if(kind==='pressure'||kind==='rhythm'){
+const pressure=kind==='pressure',val=t=>pressure?1-Math.exp(-t/10):.5+.38*Math.cos((t-15)*Math.PI/12);
+const x=t=>24+t/24*252,y=v=>111-v*85;
+let d='';for(let t=0;t<=24;t+=.25)d+=(t===0?'M':'L')+x(t).toFixed(1)+' '+y(val(t)).toFixed(1)+' ';
+svg.innerHTML='<path d="M24 17V112H278" stroke="var(--muted2)" fill="none" opacity=".55"/><path d="'+d+'" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round"/><path d="M'+x(n)+' 20V112" stroke="var(--primary)" stroke-dasharray="3 3" opacity=".5"/><circle cx="'+x(n)+'" cy="'+y(val(n))+'" r="5" fill="var(--primary)" stroke="var(--surface)" stroke-width="2"/>'+[0,6,12,18,24].map(t=>'<text x="'+x(t)+'" y="132" text-anchor="middle" font-size="10" fill="var(--muted)">'+t+'</text>').join('');
+out.textContent=n+unit+' · '+(pressure?(n<7?'睡眠压力较低':n<15?'逐渐积累':'睡眠压力较高'):(val(n)>.6?'示意清醒驱动力较高':val(n)<.35?'示意清醒驱动力较低':'示意清醒驱动力变化中'));
+note.textContent=pressure?'曲线只示意清醒时睡眠压力通常逐渐积累的趋势，不是个人睡眠预测。':'曲线为典型日间作息的定性示意，个体节律与作息时间可能不同。';
+}else if(kind==='aperture'){
+const f=[1.8,2.8,4,5.6,8,11,16][n],span=14+n*10;
+svg.innerHTML='<rect x="12" y="14" width="276" height="108" rx="10" fill="var(--surface3)"/><rect x="'+(150-span)+'" y="20" width="'+(span*2)+'" height="96" rx="5" fill="var(--primary)" opacity=".13"/><path d="M150 18V119" stroke="var(--primary)" stroke-dasharray="4 3"/>'+[55,100,150,200,245].map((x,i)=>'<circle cx="'+x+'" cy="65" r="'+(i===2?14:10)+'" fill="'+(Math.abs(x-150)<=span?'var(--primary)':'var(--muted2)')+'" opacity="'+(Math.abs(x-150)<=span?'.85':'.3')+'"/>').join('')+'<text x="150" y="139" font-size="10" text-anchor="middle" fill="var(--muted)">焦平面与清晰范围（俯视示意）</text>';
+out.textContent='f/'+f+' · '+(n<2?'较浅景深':n<4?'中等景深':'较深景深');
+note.textContent='其他条件固定时，较小的 f 值通常对应较浅景深。图中紫色区域仅表示相对清晰范围。';
+}else if(kind==='shutter'){
+const values=['1/1000','1/500','1/125','1/30','1/8','1/2'],trail=[3,8,18,42,90,140][n];
+svg.innerHTML='<rect x="12" y="14" width="276" height="108" rx="10" fill="var(--surface3)"/><path d="M26 90H274" stroke="var(--muted2)" stroke-dasharray="4 5" opacity=".5"/><path d="M'+(221-trail)+' 61H221" stroke="var(--primary)" stroke-width="23" stroke-linecap="round" opacity=".19"/><circle cx="221" cy="61" r="12" fill="var(--primary)"/><text x="150" y="139" font-size="10" text-anchor="middle" fill="var(--muted)">同一运动速度下的拖影长度</text>';
+out.textContent=values[n]+' s · '+(n<2?'运动较清晰':n<4?'出现拖影':'拖影明显');
+note.textContent='运动速度相同时，曝光时间越长，运动模糊通常越明显。';
+}else{
+const vals=[100,200,400,800,1600,3200];let dots='';for(let i=0;i<20+n*40;i++){const x=20+(i*73%260),y=23+(i*37%88);dots+='<circle cx="'+x+'" cy="'+y+'" r="1.2" fill="'+(i%2?'#fff':'#25233c')+'" opacity="'+(.09+n*.055)+'"/>'}
+svg.innerHTML='<rect x="12" y="14" width="276" height="108" rx="10" fill="#9290ad"/><path d="M12 105L95 41 150 86 220 35 288 105V122H12Z" fill="#66688b"/>'+dots+'<text x="150" y="139" font-size="10" text-anchor="middle" fill="var(--muted)">画面噪点的定性示意</text>';
+out.textContent='ISO '+vals[n]+' · '+(n<2?'噪点较少':n<4?'噪点增加':'噪点更明显');
+note.textContent='在其他条件明确的情况下，提高 ISO 常与更明显的噪点有关。示意并非真实相机测量。';
+}}
+input.addEventListener('input',render);render();return box}
+
 function wRenderDetail(){const node=cases[wi].nodes[wn],info=wInfo[wi][wn],area=q('#wDetailContent');q('#wNodeTitle').replaceChildren();q('#wNodeTitle').insertAdjacentHTML('beforeend',wIcon(['i-cube','i-camera','i-sun'][wi]));q('#wNodeTitle').append(document.createTextNode(node[0]));area.replaceChildren();const p=document.createElement('p');
 if(wt==='source'){p.textContent='该节点对应的真实知乎原文尚待核实，当前内容仅为知识结构演示。';area.append(p);return}
 if(wt==='related'){p.textContent='继续探索其他相关知识节点：';area.append(p);let list=document.createElement('div');list.className='wlist';cases[wi].nodes.forEach((n,i)=>{if(i===wn)return;let b=document.createElement('button');b.textContent=n[0];b.onclick=()=>wSelect(i);list.append(b)});area.append(list);return}
-p.textContent=info[0];p.className='wexplain';area.append(p);const v=document.createElement('div');v.className='wvisual';const clone=cards[wi].querySelector('.visual').cloneNode(true);clone.querySelectorAll('[id]').forEach(e=>{const old=e.id;e.id='detail-'+old;clone.querySelectorAll('*').forEach(el=>Array.from(el.attributes).forEach(a=>{if(a.value.includes('url(#'+old+')'))el.setAttribute(a.name,a.value.replace('url(#'+old+')','url(#detail-'+old+')'))}))});v.append(clone);area.append(v);const action=document.createElement('button');action.className='waction';action.innerHTML=wIcon(['i-cube','i-camera','i-sun'][wi])+['进入 3D 结构探索','进入摄影参数实验','进入 2D 动态演示'][wi]+wIcon('i-right');action.onclick=()=>wNotice('互动探索模块尚未接入，本轮先确认工作台布局。');const points=document.createElement('div');points.className='wpoints';points.innerHTML='<strong>要点速览 · 演示</strong>';const ul=document.createElement('ul');info.slice(1).forEach(t=>{let li=document.createElement('li');li.textContent=t;ul.append(li)});points.append(ul);area.append(points,action);const source=document.createElement('div');source.className='wsource-preview';source.innerHTML='<strong>来源片段 · 示例说明</strong><p>当前知识讲解为产品演示，正式版将在此关联经过核实的原回答片段。</p>';const more=document.createElement('button');more.className='wb';more.textContent='查看原文位置 ›';more.onclick=wOpenSource;source.append(more);area.append(source)}
+const mode=wNodeModes[wi][wn];p.textContent=info[0];p.className='wexplain';area.append(p);
+if(mode==='text'){const plain=document.createElement('div');plain.className='wplain';const details=wExtra[wi][wn];for(let i=0;i<details.length;i+=2){const h=document.createElement('h4'),t=document.createElement('p');h.textContent=details[i];t.textContent=details[i+1];plain.append(h,t)}area.append(plain)}
+else if(mode==='3d'){const v=document.createElement('div');v.className='wvisual';v.append(wCloneVisual(wi,'detail-'));area.append(v)}
+else area.append(wMini(mode));
+const points=document.createElement('div');points.className='wpoints';points.innerHTML='<strong>要点速览</strong>';const ul=document.createElement('ul');info.slice(1).forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.append(li)});points.append(ul);area.append(points);
+if(mode==='3d'){const action=document.createElement('button');action.className='waction';action.innerHTML=wIcon('i-cube')+'进入 3D 结构探索'+wIcon('i-right');action.onclick=()=>wNotice('3D 模型尚未接入，当前为结构示意。');area.append(action)}
+const source=document.createElement('div');source.className='wsource-preview';source.innerHTML='<strong>来源片段 · 示例说明</strong><p>当前知识讲解为产品演示，正式版将在此关联经过核实的原回答片段。</p>';const more=document.createElement('button');more.className='wb';more.textContent='查看原文位置 ›';more.onclick=wOpenSource;source.append(more);area.append(source)}
+
 function wGraph(){wArticleRender();q('#wQuestion').textContent=wTitle(wi);wSaveLabel();const root=q('#wRoot');root.replaceChildren();const img=cards[wi].querySelector('.visual img');if(img){let im=img.cloneNode(false);im.className='';root.append(im)}else root.innerHTML=wIcon('i-sun');let label=document.createElement('span');label.textContent=cases[wi].root;root.append(label);const container=q('#wNodes'),links=q('#wLinks');container.replaceChildren();links.querySelectorAll('line,path').forEach(e=>e.remove());const nodes=cases[wi].nodes,positions=nodes.length===4?[[22,19],[78,19],[22,77],[78,77]]:[[22,17],[78,17],[18,49],[82,49],[50,83]];wPositions=positions.map(p=>p.slice());wRootPos=[50,48];nodes.forEach((n,i)=>{let l=document.createElementNS('http://www.w3.org/2000/svg','path');l.dataset.edge=i;links.append(l);let b=document.createElement('button');b.type='button';b.className='wnode';b.dataset.windex=i;b.innerHTML='<span class="wnode-icon">'+wIcon(['i-user','i-cube','i-book','i-spark','i-link'][i])+'</span><span><strong></strong><small>知识节点 · 示例</small></span>';b.querySelector('strong').textContent=n[0];b.querySelector('small').textContent=wArticle[wi].labels[i];b.onclick=()=>wSelect(i);container.append(b)});wResetView();wSelect(wi===0?2:wi===1?1:0)}
 function wOpenSource(){const url=wArticle[wi].sourceUrl;if(url){try{const target=new URL(url);if(target.protocol==='https:'&&(target.hostname==='zhihu.com'||target.hostname.endsWith('.zhihu.com'))){window.open(target.href,'_blank','noopener,noreferrer');return}}catch{}}q('#wSourceDialog').showModal()}
 function wOpen(i){wi=i;document.body.classList.add('workspace');q('#workbench').hidden=false;q('#wDrawer').hidden=true;wGraph();q('#wInput').value='';q('#wInput').placeholder=['继续提问：例如「椎间盘为什么容易受伤？」','继续提问：例如「光圈怎样影响景深？」','继续提问：例如「为什么熬夜后反而不困？」'][i];window.scrollTo(0,0)}
