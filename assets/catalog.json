@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "description": "知识回响可复用 3D 资产登记表。starter 为可加载的基础几何；pending 为待补充；approved 为人工验收且许可明确的资产。当前无 approved 资产。",
+  "units": "meter",
+  "coordinateSystem": "Y-up, +Z forward",
+  "assets": [
+    {
+      "id": "book_pop_up",
+      "title": "立体书本",
+      "kind": "book",
+      "tags": [
+        "通用",
+        "书本展开"
+      ],
+      "status": "starter",
+      "format": "gltf",
+      "path": "models/common/book_pop_up.gltf",
+      "source": "项目自建程序化几何资产",
+      "license": "待团队明确项目资产许可；仅作为项目内部原型素材",
+      "review": "仅验证几何和文件结构，尚未视觉验收",
+      "anchors": {
+        "left_hinge": "left_hinge",
+        "right_hinge": "right_hinge"
+      }
+    },
+    {
+      "id": "discussion_table",
+      "title": "讨论桌",
+      "kind": "prop",
+      "tags": [
+        "通用",
+        "家具"
+      ],
+      "status": "starter",
+      "format": "gltf",
+      "path": "models/props/discussion_table.gltf",
+      "source": "项目自建程序化几何资产",
+      "license": "待团队明确项目资产许可；仅作为项目内部原型素材",
+      "review": "仅验证几何和文件结构，尚未视觉验收",
+      "anchors": {}
+    },
+    {
+      "id": "round_stool",
+      "title": "圆凳",
+      "kind": "prop",
+      "tags": [
+        "通用",
+        "家具"
+      ],
+      "status": "starter",
+      "format": "gltf",
+      "path": "models/props/round_stool.gltf",
+      "source": "项目自建程序化几何资产",
+      "license": "待团队明确项目资产许可；仅作为项目内部原型素材",
+      "review": "仅验证几何和文件结构，尚未视觉验收",
+      "anchors": {}
+    },
+    {
+      "id": "author",
+      "title": "答主人物",
+      "kind": "character",
+      "tags": [
+        "通用",
+        "微缩人物"
+      ],
+      "status": "starter",
+      "format": "gltf",
+      "path": "models/characters/author.gltf",
+      "source": "项目自建程序化几何资产",
+      "license": "待团队明确项目资产许可；仅作为项目内部原型素材",
+      "review": "仅验证几何和文件结构，尚未视觉验收",
+      "anchors": {
+        "speech": "speech_anchor"
+      }
+    },
+    {
+      "id": "commenter_a",
+      "title": "评论者 A",
+      "kind": "character",
+      "tags": [
+        "通用",
+        "微缩人物"
+      ],
+      "status": "starter",
+      "format": "gltf",
+      "path": "models/characters/commenter_a.gltf",
+      "source": "项目自建程序化几何资产",
+      "license": "待团队明确项目资产许可；仅作为项目内部原型素材",
+      "review": "仅验证几何和文件结构，尚未视觉验收",
+      "anchors": {
+        "speech": "speech_anchor"
+      }
+    },
+    {
+      "id": "commenter_b",
+      "title": "评论者 B",
+      "kind": "character",
+      "tags": [
+        "通用",
+        "微缩人物"
+      ],
+      "status": "starter",
+      "format": "gltf",
+      "path": "models/characters/commenter_b.gltf",
+      "source": "项目自建程序化几何资产",
+      "license": "待团队明确项目资产许可；仅作为项目内部原型素材",
+      "review": "仅验证几何和文件结构，尚未视觉验收",
+      "anchors": {
+        "speech": "speech_anchor"
+      }
+    },
+    {
+      "id": "teaching_wall",
+      "title": "知识讨论空间背景",
+      "kind": "environment",
+      "tags": [
+        "通用",
+        "教学空间"
+      ],
+      "status": "starter",
+      "format": "gltf",
+      "path": "models/environments/teaching_wall.gltf",
+      "source": "项目自建程序化几何资产",
+      "license": "待团队明确项目资产许可；仅作为项目内部原型素材",
+      "review": "仅验证几何和文件结构，尚未视觉验收",
+      "anchors": {}
+    },
+    {
+      "id": "cervical_spine",
+      "title": "颈椎解剖模型",
+      "kind": "knowledge",
+      "tags": [
+        "颈椎",
+        "人体结构"
+      ],
+      "status": "pending",
+      "format": "glb",
+      "path": null,
+      "plannedPath": "models/knowledge/anatomy/cervical_spine.glb",
+      "candidateSource": "BodyParts3D 或 Z-Anatomy；须核查具体模型及许可",
+      "requirements": "椎骨、椎间盘、神经可分别选择；结构经核验；未必能从单一来源取得完整分层模型。",
+      "requiredNodes": [
+        "bone",
+        "disc",
+        "nerve"
+      ]
+    },
+    {
+      "id": "camera_lens",
+      "title": "相机及镜头",
+      "kind": "knowledge",
+      "tags": [
+        "摄影",
+        "光学"
+      ],
+      "status": "pending",
+      "format": "glb",
+      "path": null,
+      "plannedPath": "models/knowledge/photography/camera_lens.glb",
+      "requirements": "镜头和机身可独立点击；外观原创或许可可用。"
+    },
+    {
+      "id": "sleep_clock",
+      "title": "昼夜节律教具",
+      "kind": "knowledge",
+      "tags": [
+        "睡眠",
+        "时间"
+      ],
+      "status": "pending",
+      "format": "glb",
+      "path": null,
+      "plannedPath": "models/knowledge/sleep/sleep_clock.glb",
+      "requirements": "仅在确有空间展示价值时制作；现有2D曲线优先。"
+    }
+  ]
+}

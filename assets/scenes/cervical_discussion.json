@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "id": "cervical_discussion",
+  "title": "颈椎结构·参考讨论场景",
+  "status": "draft",
+  "coordinateSystem": "Y-up",
+  "instances": [
+    {
+      "id": "book",
+      "assetId": "book_pop_up",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "room",
+      "assetId": "teaching_wall",
+      "position": [
+        0,
+        0.24,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "table",
+      "assetId": "discussion_table",
+      "position": [
+        -0.15,
+        0.3,
+        -0.25
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "author",
+      "assetId": "author",
+      "position": [
+        -0.6,
+        0.3,
+        -0.88
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "rotationY": 0,
+      "interaction": {
+        "type": "dialogue",
+        "anchor": "speech_anchor",
+        "discussionId": "author_demo"
+      }
+    },
+    {
+      "id": "commenter_a",
+      "assetId": "commenter_a",
+      "position": [
+        0.05,
+        0.3,
+        0.58
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "rotationY": 3.14159,
+      "interaction": {
+        "type": "dialogue",
+        "anchor": "speech_anchor",
+        "discussionId": "comment_a_demo"
+      }
+    },
+    {
+      "id": "commenter_b",
+      "assetId": "commenter_b",
+      "position": [
+        -1.12,
+        0.3,
+        0.55
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "rotationY": 2.6,
+      "interaction": {
+        "type": "dialogue",
+        "anchor": "speech_anchor",
+        "discussionId": "comment_b_demo"
+      }
+    },
+    {
+      "id": "spine",
+      "assetId": "cervical_spine",
+      "position": [
+        1.1,
+        0.3,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "optional": true,
+      "interaction": {
+        "type": "open_model",
+        "knowledgeNodeId": "cervical_disc"
+      }
+    }
+  ],
+  "notes": "供后续 Three.js 接入，坐标仅为初始布局建议，未经渲染验证。pending 资产不得加载；缺失时保留现有原型回退或明确提示。对话文本由案例数据提供，不烘焙入模型。"
+}
